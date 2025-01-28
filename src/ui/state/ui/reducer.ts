@@ -24,7 +24,8 @@ export enum AssetTabKey {
   ORDINALS,
   ATOMICALS,
   RUNES,
-  CAT
+  CAT,
+  GLITTR
 }
 
 export enum OrdinalsAssetTabKey {

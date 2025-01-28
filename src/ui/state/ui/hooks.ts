@@ -75,7 +75,8 @@ export function useSupportedAssets() {
     ordinals: false,
     atomicals: false,
     runes: false,
-    CAT20: false
+    CAT20: false,
+    glittr: false
   };
 
   assets.ordinals = true;
@@ -98,6 +99,9 @@ export function useSupportedAssets() {
       assetTabKeys.push(AssetTabKey.CAT);
     }
   }
+
+  assets.glittr = true;
+  assetTabKeys.push(AssetTabKey.GLITTR);
 
   return {
     tabKeys: assetTabKeys,

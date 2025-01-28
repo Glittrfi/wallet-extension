@@ -2183,6 +2183,14 @@ export class WalletController extends BaseController {
   createBuyCoinPaymentUrl = (coin: 'FB' | 'BTC', address: string, channel: string) => {
     return openapiService.createBuyCoinPaymentUrl(coin, address, channel);
   };
+
+  getGlittrAssetList = async (address: string) => {
+    const balanceData = await openapiService.getGlittrAssetList(address);
+    if (!balanceData?.balance?.utxos) {
+      throw new Error('Invalid balance data format');
+    }
+    return balanceData;
+  };
 }
 
 export default new WalletController();

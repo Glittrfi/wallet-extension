@@ -238,6 +238,7 @@ type TypeChain = {
   isFractal?: boolean;
   showPrice: boolean;
   defaultExplorer: 'mempool-space' | 'unisat-explorer';
+  glittrApi: string;
 };
 
 export const CHAINS_MAP: { [key: string]: TypeChain } = {
@@ -255,7 +256,8 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     unisatExplorerUrl: '',
     okxExplorerUrl: '',
     showPrice: true,
-    defaultExplorer: 'mempool-space'
+    defaultExplorer: 'mempool-space',
+    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
   },
   [ChainType.BITCOIN_TESTNET]: {
     enum: ChainType.BITCOIN_TESTNET,
@@ -271,7 +273,8 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     unisatExplorerUrl: '',
     okxExplorerUrl: '',
     showPrice: false,
-    defaultExplorer: 'mempool-space'
+    defaultExplorer: 'mempool-space',
+    glittrApi: 'https://testnet-core-api.glittr.fi'
   },
   [ChainType.BITCOIN_TESTNET4]: {
     enum: ChainType.BITCOIN_TESTNET4,
@@ -287,7 +290,8 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     unisatExplorerUrl: '',
     okxExplorerUrl: '',
     showPrice: false,
-    defaultExplorer: 'mempool-space'
+    defaultExplorer: 'mempool-space',
+    glittrApi: 'https://testnet-core-api.glittr.fi'
   },
   [ChainType.BITCOIN_SIGNET]: {
     enum: ChainType.BITCOIN_SIGNET,
@@ -303,7 +307,8 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     unisatExplorerUrl: '',
     okxExplorerUrl: '',
     showPrice: false,
-    defaultExplorer: 'mempool-space'
+    defaultExplorer: 'mempool-space',
+    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
   },
   [ChainType.FRACTAL_BITCOIN_MAINNET]: {
     enum: ChainType.FRACTAL_BITCOIN_MAINNET,
@@ -322,7 +327,8 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     disable: false,
     isFractal: true,
     showPrice: true,
-    defaultExplorer: 'unisat-explorer'
+    defaultExplorer: 'unisat-explorer',
+    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
   },
   [ChainType.FRACTAL_BITCOIN_TESTNET]: {
     enum: ChainType.FRACTAL_BITCOIN_TESTNET,
@@ -340,7 +346,8 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     isViewTxHistoryInternally: false,
     isFractal: true,
     showPrice: false,
-    defaultExplorer: 'unisat-explorer'
+    defaultExplorer: 'unisat-explorer',
+    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
   }
 };
 

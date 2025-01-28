@@ -549,3 +549,40 @@ export interface BitcoinBalanceV2 {
   unavailableBalance: number;
   totalBalance: number;
 }
+
+export type GlittrContractAsset = {
+  contract_id: string;
+  divisibility: number;
+  ticker: string;
+};
+
+export type GlittrContractInfo = {
+  divisibility: number;
+  supply_cap?: string;
+  ticker?: string;
+  total_supply: string;
+  type: {
+    free_mint?: boolean;
+    collateralized?: {
+      assets: GlittrContractAsset[];
+    };
+  };
+};
+
+export type GlittrBalanceData = {
+  balance: {
+    summarized: {
+      [key: string]: string;
+    };
+    utxos: {
+      assets: {
+        [key: string]: string;
+      };
+      txid: string;
+      vout: number;
+    }[];
+  };
+  contract_info: {
+    [key: string]: GlittrContractInfo;
+  };
+};

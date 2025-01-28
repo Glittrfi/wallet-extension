@@ -40,6 +40,7 @@ import { useNavigate } from '../../MainRoute';
 import { SwitchChainModal } from '../../Settings/SwitchChainModal';
 import { AtomicalsTab } from './AtomicalsTab';
 import { CATTab } from './CATTab';
+import { GlittrList } from './GlittrList';
 import { OrdinalsTab } from './OrdinalsTab';
 import { RunesList } from './RunesList';
 
@@ -147,6 +148,13 @@ export default function WalletTabScreen() {
         key: AssetTabKey.CAT,
         label: 'CAT',
         children: <CATTab />
+      });
+    }
+    if (supportedAssets.assets.glittr) {
+      items.push({
+        key: AssetTabKey.GLITTR,
+        label: 'Glittr',
+        children: <GlittrList />
       });
     }
     return items;

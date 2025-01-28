@@ -25,6 +25,7 @@ import {
   CoinPrice,
   DecodedPsbt,
   FeeSummary,
+  GlittrBalanceData,
   InscribeOrder,
   Inscription,
   InscriptionSummary,
@@ -444,6 +445,7 @@ export interface WalletController {
 
   getBuyCoinChannelList(coin: string): Promise<BtcChannelItem[]>;
   createBuyCoinPaymentUrl(coin: string, address: string, channel: string): Promise<string>;
+  getGlittrAssetList(address: string): Promise<GlittrBalanceData>;
 }
 
 const WalletContext = createContext<{
