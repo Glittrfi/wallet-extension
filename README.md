@@ -1,9 +1,9 @@
-# UniSat Wallet
+# Glittr Wallet
+### Forked from [Unisat Wallet](https://github.com/unisat-wallet/extension)
 
-UniSat Wallet - the first open-source browser extension wallet for Ordinals on bitcoin.
+Glittr Wallet - Your wallet to show Glittr native assets and do transactions!
 
-- Website: https://unisat.io/
-- Twitter: https://twitter.com/unisat_wallet
+- Website: https://glittr.fi
 
 ## How to build
 
@@ -13,7 +13,3 @@ UniSat Wallet - the first open-source browser extension wallet for Ordinals on b
 - Build the project to the `./dist/` folder with `yarn build:firefox` for Firefox
 - Build the project to the `./dist/` folder with `yarn build:chrome` for Chrome
 - Develop: `yarn build:chrome:dev`
-
-## Special Thanks
-
-Thanks to the MetaMask team for their contributions to the browser extension wallet community, UniSat Wallet relies heavily on their contributions.
