@@ -18,7 +18,7 @@ module.exports = {
         footer: '0px -10px 20px rgba(0, 0, 0, 0.2)'
       },
       colors: {
-        primary: 'rgb(234,202,68)',
+        primary: '#C954CB',
         'primary-active': '#383535',
         'hard-black': '#070606',
         'soft-black': '#2A2626',

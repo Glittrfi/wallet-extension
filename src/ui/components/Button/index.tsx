@@ -84,7 +84,7 @@ const $viewPresets = {
   }) as CSSProperties,
 
   primary: Object.assign({}, $baseViewStyle, {
-    background: 'linear-gradient(103.92deg, #EBB94C 0%, #E97E00 100%)',
+    background: 'linear-gradient(103.92deg, #C954CB 0%, #8e51ff 100%)',
     height: '48px'
   } as CSSProperties),
 

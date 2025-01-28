@@ -57,7 +57,7 @@ export function TabBar(props: TabBarProps) {
                 { width: 20, height: 20 },
                 reach
                   ? {
-                      backgroundColor: colors.gold
+                      backgroundColor: colors.pink
                     }
                   : {
                       backgroundColor: colors.bg2

@@ -36,7 +36,8 @@ const palette = {
   orange: '#FF7B21',
   orange_light: '#ff8f42',
 
-  gold: '#eac249'
+  gold: '#eac249',
+  pink: '#C954CB'
 };
 
 export const colors = Object.assign({}, palette, {
@@ -55,7 +56,7 @@ export const colors = Object.assign({}, palette, {
 
   card: '#262222',
   warning: palette.orange,
-  primary: palette.yellow,
+  primary: palette.pink,
 
   bg2: '#2a2a2a',
   bg3: '#434242',

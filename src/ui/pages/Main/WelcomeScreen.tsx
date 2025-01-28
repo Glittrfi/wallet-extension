@@ -23,11 +23,7 @@ export default function WelcomeScreen() {
             <Logo preset="large" />
           </Row>
           <Column gap="xl" mt="xxl">
-            <Text
-              text={"Inscribe and store your inscriptions in the world's first Open Source Chrome wallet for Ordinals!"}
-              preset="sub"
-              textCenter
-            />
+            <Text text={'Your wallet to show Glittr native assets and do transactions!'} preset="sub" textCenter />
 
             <Button
               text="Create new wallet"
