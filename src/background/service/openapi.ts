@@ -738,7 +738,7 @@ export class OpenApiService {
   }
 
   async getGlittrAssetList(address: string) {
-    return this.httpGlittrGet(`/helper/address/${address}/balance`);
+    return this.httpGet(`/helper/address/${address}/balance`, {});
   }
 }
 

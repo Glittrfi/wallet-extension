@@ -2185,11 +2185,14 @@ export class WalletController extends BaseController {
   };
 
   getGlittrAssetList = async (address: string) => {
-    const balanceData = await openapiService.getGlittrAssetList(address);
-    if (!balanceData?.balance?.utxos) {
-      throw new Error('Invalid balance data format');
-    }
-    return balanceData;
+    // console.log("KNTL")
+    // const balanceData = await openapiService.getGlittrAssetList(address);
+    // if (!balanceData?.balance?.utxos) {
+    //   throw new Error('Invalid balance data format');
+    // }
+    // return balanceData;
+
+    return true
   };
 }
 
