@@ -232,7 +232,7 @@ export default function SendGlittrScreen() {
       <Content>
         <Row justifyCenter>
           <Text
-            text={`${showLongNumber(runesUtils.toDecimalAmount(amount, contractInfo.divisibility))} ${contractInfo.ticker
+            text={`${showLongNumber(runesUtils.toDecimalAmount(amount, 0))} ${contractInfo.ticker
               }`}
             preset="bold"
             textCenter
@@ -240,14 +240,14 @@ export default function SendGlittrScreen() {
             wrap
           />
         </Row>
-        <Row justifyCenter fullX style={{ marginTop: -12, marginBottom: -12 }}>
+        {/* <Row justifyCenter fullX style={{ marginTop: -12, marginBottom: -12 }}>
           <TickUsdWithoutPrice
             tick={contractInfo.ticker}
             balance={runesUtils.toDecimalAmount(amount, contractInfo.divisibility)}
             type={TokenType.RUNES}
             size={'md'}
           />
-        </Row>
+        </Row> */}
 
         <Column mt="lg">
           <Text text="Recipient" preset="regular" color="textDim" />
@@ -264,15 +264,15 @@ export default function SendGlittrScreen() {
         <Column mt="lg">
           <Row justifyBetween>
             <Text text="Balance" color="textDim" />
-            <TickUsdWithoutPrice tick={contractInfo.ticker} balance={inputAmount} type={TokenType.RUNES} />
+            <TickUsdWithoutPrice tick={contractInfo.ticker} balance={inputAmount} type={TokenType.GLITTR} />
             <Row
               itemsCenter
               onClick={() => {
-                setInputAmount(runesUtils.toDecimalAmount(availableBalance, contractInfo.divisibility));
+                setInputAmount(runesUtils.toDecimalAmount(availableBalance, 0));
               }}>
               <Text text="MAX" preset="sub" style={{ color: colors.white_muted }} />
               <Text
-                text={`${showLongNumber(runesUtils.toDecimalAmount(availableBalance, contractInfo.divisibility))} ${contractInfo.ticker
+                text={`${showLongNumber(runesUtils.toDecimalAmount(availableBalance, 0))} ${contractInfo.ticker
                   }`}
                 preset="bold"
                 size="sm"
@@ -287,7 +287,6 @@ export default function SendGlittrScreen() {
             onAmountInputChange={(amount) => {
               setInputAmount(amount);
             }}
-            runesDecimal={contractInfo.divisibility}
           />
         </Column>
 

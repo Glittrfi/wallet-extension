@@ -9,6 +9,7 @@ import { useChainType } from '@/ui/state/settings/hooks';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 
+import { GlittrBalanceData } from '@/shared/types';
 import { useNavigate } from '../../MainRoute';
 
 type GlittrAsset = {
@@ -25,30 +26,43 @@ type GlittrAsset = {
 
 export function GlittrList() {
   const navigate = useNavigate();
-
   const currentAccount = useCurrentAccount();
   const chainType = useChainType();
+  const tools = useTools();
+  const isInTab = useExtensionIsInTab();
+
+  const [balance, setBalance] = useState<GlittrBalanceData | null>(null);
   const [tokens, setTokens] = useState<GlittrAsset[]>([]);
   const [total, setTotal] = useState(-1);
   const [pagination, setPagination] = useState({ currentPage: 1, pageSize: 100 });
-  const tools = useTools();
-  const isInTab = useExtensionIsInTab();
 
   const fetchData = async () => {
     try {
       const balanceData = await fetch(`${CHAINS_MAP[chainType].glittrApi}/helper/address/${currentAccount.address}/balance`);
-      const balance = await balanceData.json();
+      if (!balanceData.ok) {
+        console.log(`Failed to fetch balance: ${balanceData.statusText}`);
+        setTokens([])
+        setTotal(0)
+        return
+      }
+      const _balance = await balanceData.json();
+      if (!_balance) {
+        throw new Error('Invalid balance data received');
+      }
 
-      const userAssets = Object.entries(balance.balance.summarized).map(([key, amount]) => ({
+      const userAssets = Object.entries(_balance.balance.summarized).map(([key, amount]) => ({
         id: key,
-        ticker: balance.contract_info[key]?.ticker || 'Unknown',
+        ticker: _balance.contract_info[key]?.ticker || 'Unknown',
         amount: amount as string,
-        ...balance.contract_info[key]
+        ..._balance.contract_info[key]
       }));
 
+      setBalance(_balance)
       setTokens(userAssets);
       setTotal(userAssets.length);
     } catch (e) {
+      setTokens([])
+      setTotal(0)
       tools.toastError((e as Error).message);
       console.error(e);
     }
@@ -86,7 +100,7 @@ export function GlittrList() {
 
   if (total === 0) {
     return (
-      <Column style={{ ...containerStyle, minHeight: 150 }} itemsCenter justifyCenter>
+      <Column style={{ minHeight: 150 }} itemsCenter justifyCenter>
         <Empty text="Empty" />
       </Column>
     );
@@ -101,7 +115,7 @@ export function GlittrList() {
             className="glittr-item"
             style={itemStyle}
             onClick={() => {
-              navigate('GlittrTokenScreen', { id: asset.id });
+              navigate('GlittrTokenScreen', { balance, id: asset.id });
             }}
           >
             <Row justifyBetween itemsCenter>

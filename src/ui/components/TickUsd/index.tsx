@@ -52,7 +52,8 @@ export function TickUsd(
 export enum TokenType {
   BRC20 = 'brc20',
   CAT20 = 'CAT20',
-  RUNES = 'runes'
+  RUNES = 'runes',
+  GLITTR = 'glittr'
 }
 
 export function TickUsdWithoutPrice(
@@ -111,6 +112,8 @@ export function TickUsdWithoutPrice(
           .catch(() => {
             setShown(false);
           });
+      } else {
+        setShown(false)
       }
     }
   }, [tick]);

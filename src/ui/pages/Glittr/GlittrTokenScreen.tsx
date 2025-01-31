@@ -1,51 +1,38 @@
 import { useEffect, useState } from 'react';
 
-import { runesUtils } from '@/shared/lib/runes-utils';
 import { Button, Column, Content, Header, Icon, Layout, Row, Text } from '@/ui/components';
 import { useTools } from '@/ui/components/ActionComponent';
 import { BRC20Ticker } from '@/ui/components/BRC20Ticker';
 import { Line } from '@/ui/components/Line';
 import { Section } from '@/ui/components/Section';
-import { TickUsdWithoutPrice, TokenType } from '@/ui/components/TickUsd';
 import { useCurrentAccount } from '@/ui/state/accounts/hooks';
 import {
-  useChainType,
-  useUnisatWebsite
+  useChainType
 } from '@/ui/state/settings/hooks';
 import { colors } from '@/ui/theme/colors';
 import { fontSizes } from '@/ui/theme/font';
-import { copyToClipboard, showLongNumber, useLocationState, useWallet } from '@/ui/utils';
+import { copyToClipboard, showLongNumber, useLocationState } from '@/ui/utils';
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { CHAINS_MAP } from '@/shared/constant';
+import { runesUtils } from '@/shared/lib/runes-utils';
+import { GlittrBalanceData, GlittrContractInfo } from '@/shared/types';
 import { useNavigate } from '../MainRoute';
 
 interface LocationState {
-  id: string;
-}
-
-interface ContractInfo {
-  ticker: string;
-  divisibility: number;
-  supply_cap: string;
-  total_supply: string;
-  type: {
-    free_mint: boolean;
-  };
+  balance: GlittrBalanceData
+  id: string
 }
 
 interface TokenData {
   id: string;
   amount: string;
-  contractInfo: ContractInfo;
+  contractInfo: GlittrContractInfo;
 }
 
 export default function GlittrTokenScreen() {
-  const { id } = useLocationState<LocationState>();
-  const wallet = useWallet();
+  const { balance, id } = useLocationState<LocationState>();
   const account = useCurrentAccount();
   const navigate = useNavigate();
-  const unisatWebsite = useUnisatWebsite();
   const tools = useTools();
   const chainType = useChainType();
 
@@ -55,9 +42,6 @@ export default function GlittrTokenScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const balanceData = await fetch(`${CHAINS_MAP[chainType].glittrApi}/helper/address/${account.address}/balance`);
-        const balance = await balanceData.json();
-
         // Process contract info and balance data
         const contractInfo = balance.contract_info[id];
         const amount = balance.balance.summarized[id];
@@ -103,10 +87,7 @@ export default function GlittrTokenScreen() {
         <Column py="xl" gap="lg" style={{ borderBottomWidth: 1, borderColor: colors.white_muted }}>
           <Row itemsCenter fullX justifyCenter gap="md">
             <Text
-              text={`${runesUtils.toDecimalAmount(
-                tokenData.amount,
-                tokenData.contractInfo.divisibility
-              )}`}
+              text={tokenData.amount}
               preset="bold"
               textCenter
               size="xxl"
@@ -130,7 +111,7 @@ export default function GlittrTokenScreen() {
             />
           </Row>
 
-          <Row justifyCenter fullX mb="lg">
+          {/* <Row justifyCenter fullX mb="lg">
             <TickUsdWithoutPrice
               tick={tokenData.id}
               balance={runesUtils.toDecimalAmount(
@@ -140,7 +121,7 @@ export default function GlittrTokenScreen() {
               type={TokenType.RUNES}
               size={'md'}
             />
-          </Row>
+          </Row> */}
 
           <Row justifyBetween gap="lg" px="lg">
             <Button
@@ -181,7 +162,7 @@ export default function GlittrTokenScreen() {
           <Section
             title="Minted Supply"
             value={`${showLongNumber(
-              runesUtils.toDecimalAmount(tokenData.contractInfo.total_supply, tokenData.contractInfo.divisibility)
+              runesUtils.toDecimalAmount(tokenData.contractInfo.total_supply, 0)
             )} ${tokenData.contractInfo.ticker}`}
           />
           <Line />
@@ -189,7 +170,7 @@ export default function GlittrTokenScreen() {
           <Section
             title="Supply Cap"
             value={`${showLongNumber(
-              runesUtils.toDecimalAmount(tokenData.contractInfo.supply_cap, tokenData.contractInfo.divisibility)
+              runesUtils.toDecimalAmount(tokenData.contractInfo.supply_cap || '0', 0)
             )} ${tokenData.contractInfo.ticker}`}
           />
           <Line />
@@ -197,7 +178,7 @@ export default function GlittrTokenScreen() {
           <Section title="Divisibility" value={tokenData.contractInfo.divisibility} />
           <Line />
 
-          <Section title="Ticker" value={tokenData.contractInfo.ticker} />
+          <Section title="Ticker" value={tokenData.contractInfo.ticker || ''} />
           <Line />
 
           <Section title="Free Mint" value={tokenData.contractInfo.type.free_mint ? "Yes" : "No"} />
