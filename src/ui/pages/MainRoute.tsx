@@ -34,6 +34,8 @@ import BRC20TokenScreen from './BRC20/BRC20TokenScreen';
 import CAT721CollectionScreen from './CAT721/CAT721CollectionScreen';
 import CAT721NFTScreen from './CAT721/CAT721NFTScreen';
 import SendCAT721Screen from './CAT721/SendCAT721Screen';
+import GlittrTokenScreen from './Glittr/GlittrTokenScreen';
+import SendGlittrScreen from './Glittr/SendGlittrScreen';
 import AppTabScrren from './Main/AppTabScreen';
 import BoostScreen from './Main/BoostScreen';
 import DiscoverTabScreen from './Main/DiscoverTabScreen';
@@ -56,6 +58,7 @@ import ExportPrivateKeyScreen from './Settings/ExportPrivateKeyScreen';
 import NetworkTypeScreen from './Settings/NetworkTypeScreen';
 import UpgradeNoticeScreen from './Settings/UpgradeNoticeScreen';
 import TestScreen from './Test/TestScreen';
+import GlittrTxConfirmScreen from './Wallet/GlittrTxConfirmScreen';
 import HistoryScreen from './Wallet/HistoryScreen';
 import ReceiveScreen from './Wallet/ReceiveScreen';
 import TxConfirmScreen from './Wallet/TxConfirmScreen';
@@ -290,6 +293,21 @@ export const routes = {
   SendCAT721Screen: {
     path: '/cat721/send-cat721',
     element: <SendCAT721Screen />
+  },
+
+  GlittrTokenScreen: {
+    path: '/glittr/token',
+    element: <GlittrTokenScreen />
+  },
+
+  SendGlittrScreen: {
+    path: '/glittr/send-glittr',
+    element: <SendGlittrScreen />
+  },
+
+  GlittrTxConfirmScreen: {
+    path: '/glittr/tx-confirm',
+    element: <GlittrTxConfirmScreen />
   }
 };
 

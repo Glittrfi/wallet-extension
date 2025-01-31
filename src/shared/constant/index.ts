@@ -239,6 +239,8 @@ type TypeChain = {
   showPrice: boolean;
   defaultExplorer: 'mempool-space' | 'unisat-explorer';
   glittrApi: string;
+  electrumApi: string;
+  glittrApiKey: string;
 };
 
 export const CHAINS_MAP: { [key: string]: TypeChain } = {
@@ -257,7 +259,9 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     okxExplorerUrl: '',
     showPrice: true,
     defaultExplorer: 'mempool-space',
-    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
+    glittrApi: 'https://testnet-core-api.glittr.fi', // TODO
+    electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   },
   [ChainType.BITCOIN_TESTNET]: {
     enum: ChainType.BITCOIN_TESTNET,
@@ -274,7 +278,9 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     okxExplorerUrl: '',
     showPrice: false,
     defaultExplorer: 'mempool-space',
-    glittrApi: 'https://testnet-core-api.glittr.fi'
+    glittrApi: 'https://testnet-core-api.glittr.fi',
+    electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   },
   [ChainType.BITCOIN_TESTNET4]: {
     enum: ChainType.BITCOIN_TESTNET4,
@@ -291,7 +297,9 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     okxExplorerUrl: '',
     showPrice: false,
     defaultExplorer: 'mempool-space',
-    glittrApi: 'https://testnet-core-api.glittr.fi'
+    glittrApi: 'https://testnet-core-api.glittr.fi',
+    electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   },
   [ChainType.BITCOIN_SIGNET]: {
     enum: ChainType.BITCOIN_SIGNET,
@@ -308,7 +316,9 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     okxExplorerUrl: '',
     showPrice: false,
     defaultExplorer: 'mempool-space',
-    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
+    glittrApi: 'https://testnet-core-api.glittr.fi', // TODO
+    electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   },
   [ChainType.FRACTAL_BITCOIN_MAINNET]: {
     enum: ChainType.FRACTAL_BITCOIN_MAINNET,
@@ -328,7 +338,9 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     isFractal: true,
     showPrice: true,
     defaultExplorer: 'unisat-explorer',
-    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
+    glittrApi: 'https://testnet-core-api.glittr.fi', // TODO
+    electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   },
   [ChainType.FRACTAL_BITCOIN_TESTNET]: {
     enum: ChainType.FRACTAL_BITCOIN_TESTNET,
@@ -347,7 +359,9 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     isFractal: true,
     showPrice: false,
     defaultExplorer: 'unisat-explorer',
-    glittrApi: 'https://testnet-core-api.glittr.fi' // TODO
+    glittrApi: 'https://testnet-core-api.glittr.fi', // TODO
+    electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   }
 };
 

@@ -9,6 +9,8 @@ import { useChainType } from '@/ui/state/settings/hooks';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 
+import { useNavigate } from '../../MainRoute';
+
 type GlittrAsset = {
   id: string;
   ticker: string;
@@ -22,6 +24,8 @@ type GlittrAsset = {
 };
 
 export function GlittrList() {
+  const navigate = useNavigate();
+
   const currentAccount = useCurrentAccount();
   const chainType = useChainType();
   const [tokens, setTokens] = useState<GlittrAsset[]>([]);
@@ -96,6 +100,9 @@ export function GlittrList() {
             key={index}
             className="glittr-item"
             style={itemStyle}
+            onClick={() => {
+              navigate('GlittrTokenScreen', { id: asset.id });
+            }}
           >
             <Row justifyBetween itemsCenter>
               <Column gap="sm">

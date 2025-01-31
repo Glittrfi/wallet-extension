@@ -11,7 +11,8 @@ export enum AddressType {
 
 export enum NetworkType {
   MAINNET,
-  TESTNET
+  TESTNET,
+  DEVNET
 }
 
 export enum RestoreWalletType {
@@ -381,6 +382,13 @@ export interface ToAddressInfo {
 }
 
 export interface RawTxInfo {
+  psbtHex: string;
+  rawtx: string;
+  toAddressInfo?: ToAddressInfo;
+  fee?: number;
+}
+
+export interface GlittrRawTxInfo {
   psbtHex: string;
   rawtx: string;
   toAddressInfo?: ToAddressInfo;
