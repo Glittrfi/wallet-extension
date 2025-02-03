@@ -675,7 +675,11 @@ export class OpenApiService {
   }
 
   async checkWebsite(website: string): Promise<{ isScammer: boolean; warning: string }> {
-    return this.httpPost('/v5/default/check-website', { website });
+    const endpoint = this.endpoint;
+    this.endpoint = 'https://wallet-api-testnet.unisat.io';
+    const result = this.httpPost('/v5/default/check-website', { website });
+    this.endpoint = endpoint;
+    return result;
   }
 
   async getOrdinalsInscriptions(
