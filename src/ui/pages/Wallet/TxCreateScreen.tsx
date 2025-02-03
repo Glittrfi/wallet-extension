@@ -109,6 +109,7 @@ export default function TxCreateScreen() {
       })
       .catch((e) => {
         console.log(e);
+        console.error(e);
         setError(e.message);
       });
   }, [toInfo, inputAmount, feeRate, enableRBF]);
@@ -118,15 +119,15 @@ export default function TxCreateScreen() {
   const unavailableTipText = useMemo(() => {
     let tipText = '';
     if (chain.enum === ChainType.BITCOIN_MAINNET) {
-      tipText += `Includes Inscriptions, ARC20, Runes, and unconfirmed UTXO assets.`;
+      tipText += 'Includes Inscriptions, ARC20, Runes, and unconfirmed UTXO assets.';
     } else {
-      tipText += `Includes Inscriptions, Runes, and unconfirmed UTXO assets.`;
+      tipText += 'Includes Inscriptions, Runes, and unconfirmed UTXO assets.';
     }
 
     if (walletConfig.disableUtxoTools) {
-      tipText += ` Future versions will support spending these assets.`;
+      tipText += ' Future versions will support spending these assets.';
     } else {
-      tipText += ` You can unlock these assets by using the UTXO tools.`;
+      tipText += ' You can unlock these assets by using the UTXO tools.';
     }
     return tipText;
   }, [chain.enum]);

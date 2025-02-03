@@ -70,6 +70,13 @@ export function useChangeNetworkTypeCallback() {
             chainType: ChainType.BITCOIN_TESTNET
           })
         );
+      } else if (type == NetworkType.REGTEST) {
+        await wallet.setChainType(ChainType.GLITTR_DEVNET);
+        dispatch(
+          settingsActions.updateSettings({
+            chainType: ChainType.GLITTR_DEVNET
+          })
+        );
       }
     },
     [dispatch]

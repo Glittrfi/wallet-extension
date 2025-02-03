@@ -118,8 +118,8 @@ class PreferenceService {
         firstOpen: false,
         currency: 'USD',
         addressType: AddressType.P2WPKH,
-        networkType: NetworkType.MAINNET,
-        chainType: ChainType.BITCOIN_MAINNET,
+        networkType: NetworkType.TESTNET,
+        chainType: ChainType.BITCOIN_TESTNET4,
         keyringAlianNames: {},
         accountAlianNames: {},
         uiCachedData: {},
@@ -378,7 +378,7 @@ class PreferenceService {
   // chain type
   getChainType = () => {
     if (!CHAINS.find((chain) => chain.enum === this.store.chainType)) {
-      this.store.chainType = ChainType.BITCOIN_MAINNET;
+      this.store.chainType = ChainType.BITCOIN_TESTNET4;
     }
     return this.store.chainType;
   };

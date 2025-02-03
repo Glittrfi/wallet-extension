@@ -431,22 +431,39 @@ export class UnisatProvider extends EventEmitter {
 declare global {
   interface Window {
     unisat: UnisatProvider;
+    glittr: UnisatProvider;
   }
 }
 
 const provider = new UnisatProvider();
 
-if (!window.unisat) {
-  window.unisat = new Proxy(provider, {
-    deleteProperty: () => true
-  });
-}
+// set unisat as glittr (timeout so the real unisat will be prioritized)
+setTimeout(() => {
+  if (!window.unisat) {
+    window.unisat = new Proxy(provider, {
+      deleteProperty: () => true
+    });
 
-Object.defineProperty(window, 'unisat', {
+    Object.defineProperty(window, 'unisat', {
+      value: new Proxy(provider, {
+        deleteProperty: () => true
+      }),
+      writable: true
+    });
+
+    window.dispatchEvent(new Event('unisat#initialized'));
+  }
+}, 2000);
+
+window.glittr = new Proxy(provider, {
+  deleteProperty: () => true
+});
+
+Object.defineProperty(window, 'glittr', {
   value: new Proxy(provider, {
     deleteProperty: () => true
   }),
   writable: false
 });
 
-window.dispatchEvent(new Event('unisat#initialized'));
+window.dispatchEvent(new Event('glittr#initialized'));

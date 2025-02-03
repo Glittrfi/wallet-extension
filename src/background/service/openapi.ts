@@ -68,7 +68,7 @@ export class OpenApiService {
     const chainType = preferenceService.getChainType();
     const chain = CHAINS_MAP[chainType];
     this.endpoint = chain.endpoints[0];
-    this.glittrApi = chain.glittrApi
+    this.glittrApi = chain.glittrApi;
 
     if (!this.store.deviceId) {
       this.store.deviceId = randomstring.generate(12);
@@ -155,6 +155,18 @@ export class OpenApiService {
     return this.getRespData(res);
   };
 
+  httpGetNormalJson = async (route: string) => {
+    const url = this.endpoint + route;
+    let res: Response;
+    try {
+      res = await fetch(new Request(url), { method: 'GET', mode: 'cors', cache: 'default' });
+    } catch (e: any) {
+      throw new Error('Network error: ' + e && e.message);
+    }
+
+    return res.json();
+  };
+
   httpPost = async (route: string, params: any) => {
     const url = this.endpoint + route;
     const headers = new Headers();
@@ -181,11 +193,53 @@ export class OpenApiService {
     return this.getRespData(res);
   };
 
+  httpPostElectrum = async (route: string, params: any) => {
+    const url = this.endpoint + route;
+    let res: Response;
+    try {
+      res = await fetch(new Request(url), {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'default',
+        body: params
+      });
+    } catch (e: any) {
+      throw new Error('Network error: ' + e && e.message);
+    }
+
+    return await res.text();
+  };
+
   async getWalletConfig(): Promise<WalletConfig> {
+    if (!this.endpoint.includes('unisat')) {
+      return {
+        version: '1.5.6',
+        moonPayEnabled: false,
+        statusMessage: '',
+        endpoint: '',
+        chainTip: '',
+        disableUtxoTools: false
+      };
+    }
     return this.httpGet('/v5/default/config', {});
   }
 
   async getAddressSummary(address: string): Promise<AddressSummary> {
+    if (!this.endpoint.includes('unisat')) {
+      const response = await this.httpGetNormalJson(`/address/${address}`);
+      return {
+        address: address,
+        totalSatoshis: 0,
+        btcSatoshis: 0,
+        assetSatoshis: 0,
+        inscriptionCount: 0,
+        atomicalsCount: 0,
+        brc20Count: 0,
+        brc20Count5Byte: 0,
+        arc20Count: 0,
+        runesCount: 0
+      };
+    }
     return this.httpGet('/v5/address/summary', {
       address
     });
@@ -215,12 +269,35 @@ export class OpenApiService {
   }
 
   async getAddressBalance(address: string): Promise<BitcoinBalance> {
+    if (!this.endpoint.includes('unisat')) {
+      const response = await this.httpGetNormalJson(`/address/${address}`);
+      return {
+        confirm_amount: response.chain_stats.funded_txo_sum,
+        pending_amount: '0',
+        amount: response.chain_stats.funded_txo_sum,
+        confirm_btc_amount: '0',
+        pending_btc_amount: '0',
+        btc_amount: '0',
+        confirm_inscription_amount: '0',
+        pending_inscription_amount: '0',
+        inscription_amount: '0',
+        usd_value: '0'
+      };
+    }
     return this.httpGet('/v5/address/balance', {
       address
     });
   }
 
   async getAddressBalanceV2(address: string): Promise<BitcoinBalanceV2> {
+    if (!this.endpoint.includes('unisat')) {
+      const response = await this.httpGetNormalJson(`/address/${address}`);
+      return {
+        availableBalance: response.chain_stats.funded_txo_sum,
+        unavailableBalance: 0,
+        totalBalance: response.chain_stats.funded_txo_sum
+      };
+    }
     return this.httpGet('/v5/address/balance2', {
       address
     });
@@ -254,9 +331,28 @@ export class OpenApiService {
   }
 
   async getBTCUtxos(address: string): Promise<UTXO[]> {
-    return this.httpGet('/v5/address/btc-utxo', {
-      address
-    });
+    if (!this.endpoint.includes('unisat')) {
+      const response = await this.httpGetNormalJson(`/address/${address}/utxo`);
+      const newResponse = await Promise.all(
+        response.map(async (item) => {
+          const tx = await this.httpGetNormalJson(`/tx/${item.txid}`);
+          return {
+            txid: item.txid,
+            vout: item.vout,
+            satoshis: item.value,
+            scriptPk: tx.vout[item.vout].scriptpubkey,
+            inscriptions: [],
+            atomicals: [],
+            runes: []
+          };
+        })
+      );
+      return newResponse;
+    } else {
+      return this.httpGet('/v5/address/btc-utxo', {
+        address
+      });
+    }
   }
 
   async getInscriptionUtxo(inscriptionId: string): Promise<UTXO> {
@@ -304,12 +400,26 @@ export class OpenApiService {
   }
 
   async pushTx(rawtx: string): Promise<string> {
+    if (!this.endpoint.includes('unisat')) {
+      const response = await this.httpPostElectrum('/tx', rawtx);
+      return response;
+    }
+
     return this.httpPost('/v5/tx/broadcast', {
       rawtx
     });
   }
 
   async getFeeSummary(): Promise<FeeSummary> {
+    if (!this.endpoint.includes('unisat')) {
+      return {
+        list: [
+          { title: 'Slow', desc: 'About 1 hours', feeRate: 1 },
+          { title: 'Avg', desc: 'About 30 minutes', feeRate: 1 },
+          { title: 'Fast', desc: 'About 10 minutes', feeRate: 1 }
+        ]
+      };
+    }
     return this.httpGet('/v5/default/fee-summary', {});
   }
 
@@ -541,7 +651,11 @@ export class OpenApiService {
   }
 
   async decodePsbt(psbtHex: string, website: string): Promise<DecodedPsbt> {
-    return this.httpPost('/v5/tx/decode2', { psbtHex, website });
+    const endpoint = this.endpoint;
+    this.endpoint = 'https://wallet-api-testnet.unisat.io';
+    const result = this.httpPost('/v5/tx/decode2', { psbtHex, website });
+    this.endpoint = endpoint;
+    return result;
   }
 
   async getBuyCoinChannelList(coin: 'BTC' | 'FB'): Promise<{ channel: string }[]> {
@@ -647,7 +761,7 @@ export class OpenApiService {
   }
 
   async transferCAT20Step1(address: string, pubkey: string, to: string, tokenId: string, amount: string, feeRate) {
-    return this.httpPost(`/v5/cat20/transfer-token-step1`, {
+    return this.httpPost('/v5/cat20/transfer-token-step1', {
       address,
       pubkey,
       to,
@@ -658,27 +772,27 @@ export class OpenApiService {
   }
 
   async transferCAT20Step2(transferId: string, signedPsbt: string) {
-    return this.httpPost(`/v5/cat20/transfer-token-step2`, {
+    return this.httpPost('/v5/cat20/transfer-token-step2', {
       id: transferId,
       psbt: signedPsbt
     });
   }
 
   async transferCAT20Step3(transferId: string, signedPsbt: string) {
-    return this.httpPost(`/v5/cat20/transfer-token-step3`, {
+    return this.httpPost('/v5/cat20/transfer-token-step3', {
       id: transferId,
       psbt: signedPsbt
     });
   }
 
   async transferCAT20Step1ByMerge(mergeId: string) {
-    return this.httpPost(`/v5/cat20/transfer-token-step1-by-merge`, {
+    return this.httpPost('/v5/cat20/transfer-token-step1-by-merge', {
       mergeId
     });
   }
 
   async mergeCAT20Prepare(address: string, pubkey: string, tokenId: string, utxoCount: number, feeRate: number) {
-    return this.httpPost(`/v5/cat20/merge-token-prepare`, {
+    return this.httpPost('/v5/cat20/merge-token-prepare', {
       address,
       pubkey,
       tokenId,
@@ -688,7 +802,7 @@ export class OpenApiService {
   }
 
   async getMergeCAT20Status(mergeId: string) {
-    return this.httpPost(`/v5/cat20/merge-token-status`, {
+    return this.httpPost('/v5/cat20/merge-token-status', {
       id: mergeId
     });
   }
@@ -713,7 +827,7 @@ export class OpenApiService {
     localId: string,
     feeRate: number
   ) {
-    return this.httpPost(`/v5/cat721/transfer-nft-step1`, {
+    return this.httpPost('/v5/cat721/transfer-nft-step1', {
       address,
       pubkey,
       to,
@@ -724,14 +838,14 @@ export class OpenApiService {
   }
 
   async transferCAT721Step2(transferId: string, signedPsbt: string) {
-    return this.httpPost(`/v5/cat721/transfer-nft-step2`, {
+    return this.httpPost('/v5/cat721/transfer-nft-step2', {
       id: transferId,
       psbt: signedPsbt
     });
   }
 
   async transferCAT721Step3(transferId: string, signedPsbt: string) {
-    return this.httpPost(`/v5/cat721/transfer-nft-step3`, {
+    return this.httpPost('/v5/cat721/transfer-nft-step3', {
       id: transferId,
       psbt: signedPsbt
     });

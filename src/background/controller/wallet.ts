@@ -770,6 +770,8 @@ export class WalletController extends BaseController {
   setNetworkType = async (networkType: NetworkType) => {
     if (networkType === NetworkType.MAINNET) {
       this.setChainType(ChainType.BITCOIN_MAINNET);
+    } else if (networkType === NetworkType.REGTEST) {
+      this.setChainType(ChainType.GLITTR_DEVNET);
     } else {
       this.setChainType(ChainType.BITCOIN_TESTNET);
     }
@@ -832,7 +834,7 @@ export class WalletController extends BaseController {
         vout: v.vout,
         satoshis: v.satoshis,
         scriptPk: v.scriptPk,
-        addressType: v.addressType,
+        addressType: preferenceService.getAddressType(),
         pubkey: account.pubkey,
         inscriptions: v.inscriptions,
         atomicals: v.atomicals
@@ -2192,7 +2194,7 @@ export class WalletController extends BaseController {
     // }
     // return balanceData;
 
-    return true
+    return true;
   };
 }
 

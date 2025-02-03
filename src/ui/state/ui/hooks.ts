@@ -84,6 +84,9 @@ export function useSupportedAssets() {
     glittr: false
   };
 
+  assets.glittr = true;
+  assetTabKeys.push(AssetTabKey.GLITTR);
+
   assets.ordinals = true;
   assetTabKeys.push(AssetTabKey.ORDINALS);
 
@@ -104,9 +107,6 @@ export function useSupportedAssets() {
       assetTabKeys.push(AssetTabKey.CAT);
     }
   }
-
-  assets.glittr = true;
-  assetTabKeys.push(AssetTabKey.GLITTR);
 
   return {
     tabKeys: assetTabKeys,
