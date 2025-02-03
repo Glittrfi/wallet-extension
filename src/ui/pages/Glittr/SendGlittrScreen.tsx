@@ -16,6 +16,7 @@ import { addFeeToTx, BitcoinUTXO, BlockTxTuple, electrumFetchNonGlittrUtxos, enc
 import { ToSignInput } from '@unisat/wallet-sdk';
 import { bitcoin } from '@unisat/wallet-sdk/lib/bitcoin-core';
 import { getAddressUtxoDust } from '@unisat/wallet-sdk/lib/transaction';
+import pako from 'pako';
 
 interface ContractInfo {
   ticker: string;
@@ -25,6 +26,7 @@ interface ContractInfo {
   type: {
     free_mint: boolean;
   };
+  asset_image: number[]
 }
 
 interface LocationState {
@@ -49,7 +51,7 @@ export default function SendGlittrScreen() {
   const account = useCurrentAccount()
 
   const navigate = useNavigate();
-  const [inputAmount, setInputAmount] = useState('');
+  const [inputAmount, setInputAmount] = useState('1');
   const [disabled, setDisabled] = useState(true);
   const [toInfo, setToInfo] = useState<{
     address: string;
@@ -231,13 +233,64 @@ export default function SendGlittrScreen() {
       />
       <Content>
         <Row justifyCenter>
+          {contractInfo.type === undefined ? (
+            <div style={{
+              width: '200px',
+              height: '200px',
+              backgroundColor: '#444',
+              borderRadius: '2px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              imageRendering: 'pixelated'
+            }}>
+              {contractInfo.asset_image && (() => {
+                let restoredImage;
+                try {
+                  const restored = pako.inflate(Buffer.from(contractInfo.asset_image));
+                  restoredImage = `data:image/bmp;base64,${Buffer.from(restored).toString('base64')}`;
+                  console.log(restoredImage);
+                } catch (e) {
+                  console.error(e);
+                  restoredImage = `data:image/bmp;base64,${Buffer.from(contractInfo.asset_image).toString('base64')}`;
+                  console.error(restoredImage);
+                }
+                return (
+                  <img
+                    src={restoredImage}
+                    alt="NFT"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      borderRadius: '2px',
+                      imageRendering: 'pixelated'
+                    }}
+                  />
+                );
+              })()}
+            </div>
+          ) : (
+            <>
+                <Text
+                  text={`${showLongNumber(runesUtils.toDecimalAmount(amount, 0))} ${contractInfo.ticker
+                    }`}
+                  preset="bold"
+                  textCenter
+                  size="xxl"
+                  wrap
+              />
+
+            </>
+          )}
+        </Row>
+
+        <Row justifyCenter fullX>
           <Text
-            text={`${showLongNumber(runesUtils.toDecimalAmount(amount, 0))} ${contractInfo.ticker
-              }`}
-            preset="bold"
+            text={id}
+            preset="sub-bold"
             textCenter
-            size="xxl"
-            wrap
+            size="xs"
           />
         </Row>
         {/* <Row justifyCenter fullX style={{ marginTop: -12, marginBottom: -12 }}>
@@ -261,34 +314,36 @@ export default function SendGlittrScreen() {
           />
         </Column>
 
-        <Column mt="lg">
-          <Row justifyBetween>
-            <Text text="Balance" color="textDim" />
-            <TickUsdWithoutPrice tick={contractInfo.ticker} balance={inputAmount} type={TokenType.GLITTR} />
-            <Row
-              itemsCenter
-              onClick={() => {
-                setInputAmount(runesUtils.toDecimalAmount(availableBalance, 0));
-              }}>
-              <Text text="MAX" preset="sub" style={{ color: colors.white_muted }} />
-              <Text
-                text={`${showLongNumber(runesUtils.toDecimalAmount(availableBalance, 0))} ${contractInfo.ticker
-                  }`}
-                preset="bold"
-                size="sm"
-                wrap
-              />
+        {contractInfo.type !== undefined && (
+          <Column mt="lg">
+            <Row justifyBetween>
+              <Text text="Balance" color="textDim" />
+              <TickUsdWithoutPrice tick={contractInfo.ticker} balance={inputAmount} type={TokenType.GLITTR} />
+              <Row
+                itemsCenter
+                onClick={() => {
+                  setInputAmount(runesUtils.toDecimalAmount(availableBalance, 0));
+                }}>
+                <Text text="MAX" preset="sub" style={{ color: colors.white_muted }} />
+                <Text
+                  text={`${showLongNumber(runesUtils.toDecimalAmount(availableBalance, 0))} ${contractInfo.ticker
+                    }`}
+                  preset="bold"
+                  size="sm"
+                  wrap
+                />
+              </Row>
             </Row>
-          </Row>
-          <Input
-            preset="amount"
-            placeholder={'Amount'}
-            value={inputAmount.toString()}
-            onAmountInputChange={(amount) => {
-              setInputAmount(amount);
-            }}
-          />
-        </Column>
+            <Input
+              preset="amount"
+              placeholder={'Amount'}
+              value={inputAmount.toString()}
+              onAmountInputChange={(amount) => {
+                setInputAmount(amount);
+              }}
+            />
+          </Column>
+        )}
 
         {toInfo.address ? (
           <Column mt="lg">

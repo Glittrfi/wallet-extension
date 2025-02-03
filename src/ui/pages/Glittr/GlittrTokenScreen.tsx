@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 
 import { Button, Column, Content, Header, Icon, Layout, Row, Text } from '@/ui/components';
 import { useTools } from '@/ui/components/ActionComponent';
-import { BRC20Ticker } from '@/ui/components/BRC20Ticker';
 import { Line } from '@/ui/components/Line';
 import { Section } from '@/ui/components/Section';
 import { useCurrentAccount } from '@/ui/state/accounts/hooks';
@@ -16,6 +15,8 @@ import { LoadingOutlined } from '@ant-design/icons';
 
 import { runesUtils } from '@/shared/lib/runes-utils';
 import { GlittrBalanceData, GlittrContractInfo } from '@/shared/types';
+import { BRC20Ticker } from '@/ui/components/BRC20Ticker';
+import pako from 'pako';
 import { useNavigate } from '../MainRoute';
 
 interface LocationState {
@@ -86,15 +87,56 @@ export default function GlittrTokenScreen() {
       <Content>
         <Column py="xl" gap="lg" style={{ borderBottomWidth: 1, borderColor: colors.white_muted }}>
           <Row itemsCenter fullX justifyCenter gap="md">
-            <Text
-              text={tokenData.amount}
-              preset="bold"
-              textCenter
-              size="xxl"
-              wrap
-              digital
-            />
-            <BRC20Ticker tick={tokenData.contractInfo.ticker} preset="lg" />
+            {tokenData.contractInfo.type === undefined ? (
+              <div style={{
+                width: '200px',
+                height: '200px',
+                backgroundColor: '#444',
+                borderRadius: '2px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                imageRendering: 'pixelated'
+              }}>
+                {tokenData.contractInfo.asset_image && (() => {
+                  let restoredImage;
+                  try {
+                    const restored = pako.inflate(Buffer.from(tokenData.contractInfo.asset_image));
+                    restoredImage = `data:image/bmp;base64,${Buffer.from(restored).toString('base64')}`;
+                    console.log(restoredImage);
+                  } catch (e) {
+                    console.error(e);
+                    restoredImage = `data:image/bmp;base64,${Buffer.from(tokenData.contractInfo.asset_image).toString('base64')}`;
+                    console.error(restoredImage);
+                  }
+                  return (
+                    <img
+                      src={restoredImage}
+                      alt="NFT"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        borderRadius: '2px',
+                        imageRendering: 'pixelated'
+                      }}
+                    />
+                  );
+                })()}
+              </div>
+            ) : (
+              <>
+                  <Text
+                    text={tokenData.amount}
+                    preset="bold"
+                    textCenter
+                    size="xxl"
+                    wrap
+                    digital
+                  />
+                  <BRC20Ticker tick={tokenData.contractInfo.ticker} preset="lg" />
+              </>
+            )}
           </Row>
 
           <Row justifyCenter fullX>
@@ -110,18 +152,6 @@ export default function GlittrTokenScreen() {
               }}
             />
           </Row>
-
-          {/* <Row justifyCenter fullX mb="lg">
-            <TickUsdWithoutPrice
-              tick={tokenData.id}
-              balance={runesUtils.toDecimalAmount(
-                tokenData.amount,
-                tokenData.contractInfo.divisibility
-              )}
-              type={TokenType.RUNES}
-              size={'md'}
-            />
-          </Row> */}
 
           <Row justifyBetween gap="lg" px="lg">
             <Button
@@ -159,32 +189,50 @@ export default function GlittrTokenScreen() {
             borderRadius: 15
           }}>
 
-          <Section
-            title="Minted Supply"
-            value={`${showLongNumber(
-              runesUtils.toDecimalAmount(tokenData.contractInfo.total_supply, 0)
-            )} ${tokenData.contractInfo.ticker}`}
-          />
-          <Line />
-
-          <Section
-            title="Supply Cap"
-            value={`${showLongNumber(
-              runesUtils.toDecimalAmount(tokenData.contractInfo.supply_cap || '0', 0)
-            )} ${tokenData.contractInfo.ticker}`}
-          />
-          <Line />
-
-          <Section title="Divisibility" value={tokenData.contractInfo.divisibility} />
-          <Line />
-
-          <Section title="Ticker" value={tokenData.contractInfo.ticker || ''} />
-          <Line />
-
-          <Section title="Free Mint" value={tokenData.contractInfo.type.free_mint ? "Yes" : "No"} />
+          {tokenData.contractInfo.type === undefined ?
+            (
+              <>
+                <Section
+                  title="Minted Supply"
+                  value={`${showLongNumber(
+                    runesUtils.toDecimalAmount(tokenData.contractInfo.total_supply, 0)
+                  )}`}
+                />
+                <Line />
+                <Section
+                  title="Supply Cap"
+                  value={`${tokenData.contractInfo.supply_cap ? showLongNumber(
+                    runesUtils.toDecimalAmount(tokenData.contractInfo.supply_cap || '0', 0)
+                  ) : '-'}`}
+                />
+              </>
+            )
+            :
+            <>
+              <Section
+                title="Minted Supply"
+                value={`${showLongNumber(
+                  runesUtils.toDecimalAmount(tokenData.contractInfo.total_supply, 0)
+                )} ${tokenData.contractInfo.ticker}`}
+              />
+              <Line />
+              <Section
+                title="Supply Cap"
+                value={`${showLongNumber(
+                  runesUtils.toDecimalAmount(tokenData.contractInfo.supply_cap || '0', 0)
+                )} ${tokenData.contractInfo.ticker}`}
+              />
+              <Line />
+              <Section title="Divisibility" value={tokenData.contractInfo.divisibility} />
+              <Line />
+              <Section title="Ticker" value={tokenData.contractInfo.ticker || ''} />
+              <Line />
+              <Section title="Free Mint" value={tokenData.contractInfo.type.free_mint ? "Yes" : "No"} />
+            </>
+          }
         </Column>
 
       </Content>
-    </Layout>
+    </Layout >
   );
 }

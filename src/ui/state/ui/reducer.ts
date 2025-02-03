@@ -8,6 +8,7 @@ export interface UIState {
   ordinalsAssetTabKey: OrdinalsAssetTabKey;
   atomicalsAssetTabKey: AtomicalsAssetTabKey;
   catAssetTabKey: CATAssetTabKey;
+  glittrAssetTabKey: GlittrAssetTabKey;
   uiTxCreateScreen: {
     toInfo: {
       address: string;
@@ -45,11 +46,17 @@ export enum CATAssetTabKey {
   CAT721
 }
 
+export enum GlittrAssetTabKey {
+  FT,
+  NFT
+}
+
 export const initialState: UIState = {
   assetTabKey: AssetTabKey.ORDINALS,
   ordinalsAssetTabKey: OrdinalsAssetTabKey.ALL,
   atomicalsAssetTabKey: AtomicalsAssetTabKey.ARC20,
   catAssetTabKey: CATAssetTabKey.CAT20,
+  glittrAssetTabKey: GlittrAssetTabKey.FT,
   uiTxCreateScreen: {
     toInfo: {
       address: '',
@@ -77,6 +84,7 @@ const slice = createSlice({
           ordinalsAssetTabKey?: OrdinalsAssetTabKey;
           atomicalsAssetTabKey?: AtomicalsAssetTabKey;
           catAssetTabKey?: CATAssetTabKey;
+          glittrAssetTabKey?: GlittrAssetTabKey;
         };
       }
     ) {
@@ -92,6 +100,9 @@ const slice = createSlice({
       }
       if (payload.catAssetTabKey !== undefined) {
         state.catAssetTabKey = payload.catAssetTabKey;
+      }
+      if (payload.glittrAssetTabKey !== undefined) {
+        state.glittrAssetTabKey = payload.glittrAssetTabKey;
       }
       return state;
     },
@@ -144,6 +155,9 @@ const slice = createSlice({
       }
       if (!state.uiTxCreateScreen) {
         state.uiTxCreateScreen = initialState.uiTxCreateScreen;
+      }
+      if (!state.glittrAssetTabKey) {
+        state.glittrAssetTabKey = initialState.glittrAssetTabKey;
       }
     });
   }

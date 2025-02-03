@@ -569,12 +569,13 @@ export type GlittrContractInfo = {
   supply_cap?: string;
   ticker?: string;
   total_supply: string;
-  type: {
+  type?: {
     free_mint?: boolean;
     collateralized?: {
       assets: GlittrContractAsset[];
     };
   };
+  asset_image?: number[]
 };
 
 export type GlittrBalanceData = {

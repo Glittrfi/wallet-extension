@@ -40,6 +40,11 @@ export function useUiTxCreateScreen() {
   return uiState.uiTxCreateScreen;
 }
 
+export function useGlittrAssetTabKey() {
+  const uiState = useUIState();
+  return uiState.glittrAssetTabKey;
+}
+
 export function useUpdateUiTxCreateScreen() {
   const dispatch = useAppDispatch();
   return ({
