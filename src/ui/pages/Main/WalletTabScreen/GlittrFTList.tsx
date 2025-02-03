@@ -60,7 +60,6 @@ export function GlittrFTList() {
           return (
             contractInfo &&
             contractInfo.divisibility !== undefined &&
-            contractInfo.ticker !== undefined &&
             contractInfo.type !== undefined &&
             !contractInfo.asset
           );
@@ -135,7 +134,7 @@ export function GlittrFTList() {
             <Row justifyBetween itemsCenter>
               <Column gap="sm">
                 <Row gap="md" itemsCenter>
-                  <strong style={{ fontSize: '14px', color: '#fff' }}>{asset.ticker}</strong>
+                  {asset.ticker && <strong style={{ fontSize: '14px', color: '#fff' }}>{asset.ticker}</strong>}
                   <span style={{ fontSize: '12px', color: '#999' }}>ID: {asset.id}</span>
                 </Row>
                 <Row gap="md" style={{ flexWrap: 'wrap' }}>
