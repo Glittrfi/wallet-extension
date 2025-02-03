@@ -122,6 +122,13 @@ export default function WalletTabScreen() {
       label: string;
       children: JSX.Element;
     }[] = [];
+    if (supportedAssets.assets.glittr) {
+      items.push({
+        key: AssetTabKey.GLITTR,
+        label: 'Glittr',
+        children: <GlittrList />
+      });
+    }
     if (supportedAssets.assets.ordinals) {
       items.push({
         key: AssetTabKey.ORDINALS,
@@ -150,19 +157,12 @@ export default function WalletTabScreen() {
         children: <CATTab />
       });
     }
-    if (supportedAssets.assets.glittr) {
-      items.push({
-        key: AssetTabKey.GLITTR,
-        label: 'Glittr',
-        children: <GlittrList />
-      });
-    }
     return items;
   }, [supportedAssets.key]);
 
   const finalAssetTabKey = useMemo(() => {
     if (!supportedAssets.tabKeys.includes(assetTabKey)) {
-      return AssetTabKey.ORDINALS;
+      return AssetTabKey.GLITTR;
     }
     return assetTabKey;
   }, [assetTabKey, supportedAssets.key]);
@@ -253,7 +253,7 @@ export default function WalletTabScreen() {
               marginBottom: -8
             }}
           />
-          {/* 
+          {/*
           <Column
             py={'lg'}
             px={'md'}
