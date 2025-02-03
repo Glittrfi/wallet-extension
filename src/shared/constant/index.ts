@@ -212,12 +212,14 @@ export enum ChainType {
   BITCOIN_TESTNET4 = 'BITCOIN_TESTNET4',
   BITCOIN_SIGNET = 'BITCOIN_SIGNET',
   FRACTAL_BITCOIN_MAINNET = 'FRACTAL_BITCOIN_MAINNET',
-  FRACTAL_BITCOIN_TESTNET = 'FRACTAL_BITCOIN_TESTNET'
+  FRACTAL_BITCOIN_TESTNET = 'FRACTAL_BITCOIN_TESTNET',
+  GLITTR_DEVNET = 'GLITTR_DEVNET'
 }
 
 export const NETWORK_TYPES = [
   { value: NetworkType.MAINNET, label: 'LIVENET', name: 'livenet', validNames: [0, 'livenet', 'mainnet'] },
-  { value: NetworkType.TESTNET, label: 'TESTNET', name: 'testnet', validNames: ['testnet'] }
+  { value: NetworkType.TESTNET, label: 'TESTNET', name: 'testnet', validNames: ['testnet'] },
+  { value: NetworkType.REGTEST, label: 'DEVNET', name: 'devnet', validNames: ['devnet'] }
 ];
 
 type TypeChain = {
@@ -261,7 +263,8 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     defaultExplorer: 'mempool-space',
     glittrApi: 'https://testnet-core-api.glittr.fi', // TODO
     electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
-    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20', // TODO
+    disable: true
   },
   [ChainType.BITCOIN_TESTNET]: {
     enum: ChainType.BITCOIN_TESTNET,
@@ -362,6 +365,25 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     glittrApi: 'https://testnet-core-api.glittr.fi', // TODO
     electrumApi: 'https://testnet-electrum.glittr.fi', // TODO
     glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
+  },
+  [ChainType.GLITTR_DEVNET]: {
+    enum: ChainType.GLITTR_DEVNET,
+    label: 'Glittr Devnet',
+    iconLabel: 'Bitcoin',
+    icon: './images/artifacts/bitcoin-testnet.svg',
+    unit: 'rBTC',
+    networkType: NetworkType.REGTEST,
+    endpoints: ['https://devnet-electrum.glittr.fi'],
+    mempoolSpaceUrl: 'https://devnet2-explorer.glittr.fi',
+    unisatUrl: 'https://signet.unisat.io',
+    ordinalsUrl: '',
+    unisatExplorerUrl: '',
+    okxExplorerUrl: '',
+    showPrice: false,
+    defaultExplorer: 'mempool-space',
+    glittrApi: 'https://devnet2-core-api.glittr.fi', // TODO
+    electrumApi: 'https://devnet-electrum.glittr.fi', // TODO
+    glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   }
 };
 
@@ -381,23 +403,23 @@ export const CHAIN_GROUPS: TypeChainGroup[] = [
     chain: CHAINS_MAP[ChainType.BITCOIN_MAINNET]
   },
   {
-    type: 'list',
-    label: 'Bitcoin Testnet',
-    icon: './images/artifacts/bitcoin-testnet-all.svg',
-    items: [
-      CHAINS_MAP[ChainType.BITCOIN_TESTNET],
-      CHAINS_MAP[ChainType.BITCOIN_TESTNET4],
-      CHAINS_MAP[ChainType.BITCOIN_SIGNET]
-    ]
+    type: 'single',
+    chain: CHAINS_MAP[ChainType.BITCOIN_TESTNET4]
   },
   {
     type: 'single',
-    chain: CHAINS_MAP[ChainType.FRACTAL_BITCOIN_MAINNET]
-  },
-  {
-    type: 'single',
-    chain: CHAINS_MAP[ChainType.FRACTAL_BITCOIN_TESTNET]
+    chain: CHAINS_MAP[ChainType.GLITTR_DEVNET]
   }
+  // {
+  //   type: 'list',
+  //   label: 'Bitcoin Testnet',
+  //   icon: './images/artifacts/bitcoin-testnet-all.svg',
+  //   items: [
+  //     CHAINS_MAP[ChainType.BITCOIN_TESTNET],
+  //     CHAINS_MAP[ChainType.BITCOIN_TESTNET4],
+  //     CHAINS_MAP[ChainType.BITCOIN_SIGNET]
+  //   ]
+  // }
 ];
 
 export const MINIMUM_GAS_LIMIT = 21000;

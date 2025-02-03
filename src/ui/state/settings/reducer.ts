@@ -15,8 +15,8 @@ export interface SettingsState {
 
 export const initialState: SettingsState = {
   locale: 'English',
-  networkType: NetworkType.MAINNET,
-  chainType: ChainType.BITCOIN_MAINNET,
+  networkType: NetworkType.TESTNET,
+  chainType: ChainType.BITCOIN_TESTNET4,
   walletConfig: {
     version: '',
     moonPayEnabled: true,
