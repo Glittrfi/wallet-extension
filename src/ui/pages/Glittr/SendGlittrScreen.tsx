@@ -1,3 +1,4 @@
+import pako from 'pako';
 import { useEffect, useMemo, useState } from 'react';
 
 import { CHAINS_MAP } from '@/shared/constant';
@@ -12,11 +13,23 @@ import { useCurrentAccount } from '@/ui/state/accounts/hooks';
 import { useChainType } from '@/ui/state/settings/hooks';
 import { colors } from '@/ui/theme/colors';
 import { isValidAddress, showLongNumber, useLocationState, useWallet } from '@/ui/utils';
-import { addFeeToTx, BitcoinUTXO, BlockTxTuple, electrumFetchNonGlittrUtxos, encodeVaruint, getAssetUtxos, GlittrSDK, Network, OpReturnMessage, Output, txBuilder, Varuint } from '@glittr-sdk/sdk';
+import {
+  addFeeToTx,
+  BitcoinUTXO,
+  BlockTxTuple,
+  electrumFetchNonGlittrUtxos,
+  encodeVaruint,
+  getAssetUtxos,
+  GlittrSDK,
+  Network,
+  OpReturnMessage,
+  Output,
+  txBuilder,
+  Varuint
+} from '@glittr-sdk/sdk';
 import { ToSignInput } from '@unisat/wallet-sdk';
 import { bitcoin } from '@unisat/wallet-sdk/lib/bitcoin-core';
 import { getAddressUtxoDust } from '@unisat/wallet-sdk/lib/transaction';
-import pako from 'pako';
 
 interface ContractInfo {
   ticker: string;
@@ -26,7 +39,7 @@ interface ContractInfo {
   type: {
     free_mint: boolean;
   };
-  asset_image: number[]
+  asset: number[];
 }
 
 interface LocationState {
@@ -39,8 +52,7 @@ type TransferParams = {
   contractId: string;
   amount: string;
   receiver: string;
-}
-
+};
 
 export default function SendGlittrScreen() {
   const defaultOutputValue = 546;
@@ -48,7 +60,7 @@ export default function SendGlittrScreen() {
 
   const wallet = useWallet();
   const chainType = useChainType();
-  const account = useCurrentAccount()
+  const account = useCurrentAccount();
 
   const navigate = useNavigate();
   const [inputAmount, setInputAmount] = useState('1');
@@ -100,20 +112,22 @@ export default function SendGlittrScreen() {
     }
 
     const glittrTransfer = async (): Promise<RawTxInfo> => {
-      const transfers: TransferParams[] = [{
-        amount: inputAmount,
-        contractId: id,
-        receiver: toInfo.address
-      }]
+      const transfers: TransferParams[] = [
+        {
+          amount: inputAmount,
+          contractId: id,
+          receiver: toInfo.address
+        }
+      ];
 
-      const walletNetwork = await wallet.getNetworkType()
-      let network: Network = "testnet" //default
+      const walletNetwork = await wallet.getNetworkType();
+      let network: Network = 'testnet'; //default
       if (walletNetwork === NetworkType.MAINNET) {
-        network = 'mainnet'
+        network = 'mainnet';
       } else if (walletNetwork === NetworkType.TESTNET) {
-        network = 'testnet'
+        network = 'testnet';
       } else {
-        network = 'regtest'
+        network = 'regtest';
       }
 
       const glittrSdk = new GlittrSDK({
@@ -121,44 +135,49 @@ export default function SendGlittrScreen() {
         glittrApi: CHAINS_MAP[chainType].glittrApi,
         electrumApi: CHAINS_MAP[chainType].electrumApi,
         apiKey: CHAINS_MAP[chainType].glittrApiKey
-      })
-      const allTransfers: { amount: Varuint, asset: BlockTxTuple, output: Varuint }[] = [];
-      const excessOutputs: { address: string, value: number }[] = [];
+      });
+      const allTransfers: { amount: Varuint; asset: BlockTxTuple; output: Varuint }[] = [];
+      const excessOutputs: { address: string; value: number }[] = [];
 
       allTransfers.push({
         amount: encodeVaruint(inputAmount),
-        asset: [encodeVaruint(id.split(":")[0]!), encodeVaruint(id.split(":")[1]!)],
+        asset: [encodeVaruint(id.split(':')[0]!), encodeVaruint(id.split(':')[1]!)],
         output: encodeVaruint(1)
-      })
+      });
 
-      const utxos = await electrumFetchNonGlittrUtxos(glittrSdk, account.address)
-      const nonFeeInputs: BitcoinUTXO[] = []
+      const utxos = await electrumFetchNonGlittrUtxos(glittrSdk, account.address);
+      const nonFeeInputs: BitcoinUTXO[] = [];
 
       for (const transfer of transfers) {
-        const assetRequired = BigInt(transfer.amount)
-        const assetUtxos = await getAssetUtxos(glittrSdk, account.address, transfer.contractId)
-        let assetTotal = BigInt(0)
+        const assetRequired = BigInt(transfer.amount);
+        const assetUtxos = await getAssetUtxos(glittrSdk, account.address, transfer.contractId);
+        let assetTotal = BigInt(0);
 
         for (const utxo of assetUtxos) {
-          if (assetTotal >= assetRequired) break
-          assetTotal += BigInt(utxo.assetAmount)
+          if (assetTotal >= assetRequired) break;
+          assetTotal += BigInt(utxo.assetAmount);
           nonFeeInputs.push({
             txid: utxo.txid,
             vout: utxo.vout,
             value: utxo.value,
             status: utxo.status
-          })
+          });
         }
 
         if (assetTotal < assetRequired) {
-          throw new Error(`Insufficient balance for asset ${transfer.contractId}. Required: ${assetRequired}, balance: ${assetTotal}`)
+          throw new Error(
+            `Insufficient balance for asset ${transfer.contractId}. Required: ${assetRequired}, balance: ${assetTotal}`
+          );
         }
 
-        const excessAssetValue = assetTotal - assetRequired
+        const excessAssetValue = assetTotal - assetRequired;
         if (excessAssetValue > 0) {
           // Add excess transfer to allTransfers array
           allTransfers.push({
-            asset: [encodeVaruint(transfer.contractId.split(":")[0]!), encodeVaruint(transfer.contractId.split(":")[1]!)],
+            asset: [
+              encodeVaruint(transfer.contractId.split(':')[0]!),
+              encodeVaruint(transfer.contractId.split(':')[1]!)
+            ],
             amount: encodeVaruint(excessAssetValue),
             output: encodeVaruint(transfers.length + excessOutputs.length + 1)
           });
@@ -178,50 +197,46 @@ export default function SendGlittrScreen() {
 
       const nonFeeOutputs: Output[] = [
         { script: await txBuilder.compress(tx), value: 0 },
-        ...transfers.map(t => ({
+        ...transfers.map((t) => ({
           address: t.receiver,
           value: 600
         })),
         ...excessOutputs
       ];
 
-      const { inputs, outputs } = await addFeeToTx(
-        network,
-        account.address,
-        utxos,
-        nonFeeInputs,
-        nonFeeOutputs
-      )
+      const { inputs, outputs } = await addFeeToTx(network, account.address, utxos, nonFeeInputs, nonFeeOutputs);
 
       const psbt = await glittrSdk.createRawTx({
         address: account.address,
         inputs,
         outputs,
         publicKey: account.pubkey
-      })
+      });
 
       // TODO validate glittr tx
 
-      const toSignInputs: ToSignInput[] = await wallet.formatOptionsToSignInputs(psbt.toHex())
-      const psbtHex = await wallet.signPsbtWithHex(psbt.toHex(), toSignInputs, true)
-      const rawTx = bitcoin.Psbt.fromHex(psbtHex).extractTransaction().toHex()
+      const toSignInputs: ToSignInput[] = await wallet.formatOptionsToSignInputs(psbt.toHex());
+      const psbtHex = await wallet.signPsbtWithHex(psbt.toHex(), toSignInputs, true);
+      const rawTx = bitcoin.Psbt.fromHex(psbtHex).extractTransaction().toHex();
 
       const rawTxInfo: RawTxInfo = {
         psbtHex,
         rawtx: rawTx,
         toAddressInfo: toInfo
-      }
+      };
 
-      return rawTxInfo
-    }
+      return rawTxInfo;
+    };
 
-    glittrTransfer().then((data) => {
-      setRawTxInfo(data)
-      setDisabled(false)
-    }).catch((e) => {
-      console.log(e)
-      setError(e ?? e.message)
-    })
+    glittrTransfer()
+      .then((data) => {
+        setRawTxInfo(data);
+        setDisabled(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setError(e ?? e.message);
+      });
   }, [toInfo, inputAmount, feeRate, outputValue, minOutputValue]);
   return (
     <Layout>
@@ -234,64 +249,59 @@ export default function SendGlittrScreen() {
       <Content>
         <Row justifyCenter>
           {contractInfo.type === undefined ? (
-            <div style={{
-              width: '200px',
-              height: '200px',
-              backgroundColor: '#444',
-              borderRadius: '2px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              imageRendering: 'pixelated'
-            }}>
-              {contractInfo.asset_image && (() => {
-                let restoredImage;
-                try {
-                  const restored = pako.inflate(Buffer.from(contractInfo.asset_image));
-                  restoredImage = `data:image/bmp;base64,${Buffer.from(restored).toString('base64')}`;
-                  console.log(restoredImage);
-                } catch (e) {
-                  console.error(e);
-                  restoredImage = `data:image/bmp;base64,${Buffer.from(contractInfo.asset_image).toString('base64')}`;
-                  console.error(restoredImage);
-                }
-                return (
-                  <img
-                    src={restoredImage}
-                    alt="NFT"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                      borderRadius: '2px',
-                      imageRendering: 'pixelated'
-                    }}
-                  />
-                );
-              })()}
+            <div
+              style={{
+                width: '200px',
+                height: '200px',
+                backgroundColor: '#444',
+                borderRadius: '2px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                imageRendering: 'pixelated'
+              }}>
+              {contractInfo.asset &&
+                (() => {
+                  let restoredImage;
+                  try {
+                    const restored = pako.inflate(Buffer.from(contractInfo.asset));
+                    restoredImage = `data:image/bmp;base64,${Buffer.from(restored).toString('base64')}`;
+                    console.log(restoredImage);
+                  } catch (e) {
+                    console.error(e);
+                    restoredImage = `data:image/bmp;base64,${Buffer.from(contractInfo.asset).toString('base64')}`;
+                    console.error(restoredImage);
+                  }
+                  return (
+                    <img
+                      src={restoredImage}
+                      alt="NFT"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        borderRadius: '2px',
+                        imageRendering: 'pixelated'
+                      }}
+                    />
+                  );
+                })()}
             </div>
           ) : (
             <>
-                <Text
-                  text={`${showLongNumber(runesUtils.toDecimalAmount(amount, 0))} ${contractInfo.ticker
-                    }`}
-                  preset="bold"
-                  textCenter
-                  size="xxl"
-                  wrap
+              <Text
+                text={`${showLongNumber(runesUtils.toDecimalAmount(amount, 0))} ${contractInfo.ticker}`}
+                preset="bold"
+                textCenter
+                size="xxl"
+                wrap
               />
-
             </>
           )}
         </Row>
 
         <Row justifyCenter fullX>
-          <Text
-            text={id}
-            preset="sub-bold"
-            textCenter
-            size="xs"
-          />
+          <Text text={id} preset="sub-bold" textCenter size="xs" />
         </Row>
         {/* <Row justifyCenter fullX style={{ marginTop: -12, marginBottom: -12 }}>
           <TickUsdWithoutPrice
@@ -326,8 +336,7 @@ export default function SendGlittrScreen() {
                 }}>
                 <Text text="MAX" preset="sub" style={{ color: colors.white_muted }} />
                 <Text
-                  text={`${showLongNumber(runesUtils.toDecimalAmount(availableBalance, 0))} ${contractInfo.ticker
-                    }`}
+                  text={`${showLongNumber(runesUtils.toDecimalAmount(availableBalance, 0))} ${contractInfo.ticker}`}
                   preset="bold"
                   size="sm"
                   wrap

@@ -575,7 +575,7 @@ export type GlittrContractInfo = {
       assets: GlittrContractAsset[];
     };
   };
-  asset_image?: number[]
+  asset?: number[];
 };
 
 export type GlittrBalanceData = {

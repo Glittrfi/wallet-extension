@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import { CHAINS_MAP } from '@/shared/constant';
 import { GlittrBalanceData } from '@/shared/types';
 import { Column, Row } from '@/ui/components';
@@ -8,7 +10,7 @@ import { useExtensionIsInTab } from '@/ui/features/browser/tabs';
 import { useCurrentAccount } from '@/ui/state/accounts/hooks';
 import { useChainType } from '@/ui/state/settings/hooks';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+
 import { useNavigate } from '../../MainRoute';
 
 type GlittrAsset = {
@@ -37,12 +39,14 @@ export function GlittrFTList() {
 
   const fetchData = async () => {
     try {
-      const balanceData = await fetch(`${CHAINS_MAP[chainType].glittrApi}/helper/address/${currentAccount.address}/balance`);
+      const balanceData = await fetch(
+        `${CHAINS_MAP[chainType].glittrApi}/helper/address/${currentAccount.address}/balance`
+      );
       if (!balanceData.ok) {
         console.log(`Failed to fetch balance: ${balanceData.statusText}`);
-        setTokens([])
-        setTotal(0)
-        return
+        setTokens([]);
+        setTotal(0);
+        return;
       }
       const _balance = await balanceData.json();
       if (!_balance) {
@@ -53,11 +57,13 @@ export function GlittrFTList() {
       const userAssets = Object.entries(_balance.balance.summarized)
         .filter(([key]) => {
           const contractInfo = _balance.contract_info[key];
-          return contractInfo &&
+          return (
+            contractInfo &&
             contractInfo.divisibility !== undefined &&
             contractInfo.ticker !== undefined &&
             contractInfo.type !== undefined &&
-            !contractInfo.asset_image;
+            !contractInfo.asset
+          );
         })
         .map(([key, amount]) => ({
           id: key,
@@ -66,12 +72,12 @@ export function GlittrFTList() {
           ..._balance.contract_info[key]
         }));
 
-      setBalance(_balance)
+      setBalance(_balance);
       setTokens(userAssets);
       setTotal(userAssets.length);
     } catch (e) {
-      setTokens([])
-      setTotal(0)
+      setTokens([]);
+      setTotal(0);
       tools.toastError((e as Error).message);
       console.error(e);
     }
@@ -85,7 +91,7 @@ export function GlittrFTList() {
     width: 'auto',
     height: isInTab ? 'calc(100vh - 240px)' : '500px',
     overflowY: 'auto' as const,
-    overflowX: 'hidden' as const,
+    overflowX: 'hidden' as const
   };
 
   const itemStyle = {
@@ -125,8 +131,7 @@ export function GlittrFTList() {
             style={itemStyle}
             onClick={() => {
               navigate('GlittrTokenScreen', { balance, id: asset.id });
-            }}
-          >
+            }}>
             <Row justifyBetween itemsCenter>
               <Column gap="sm">
                 <Row gap="md" itemsCenter>
@@ -146,8 +151,7 @@ export function GlittrFTList() {
                   borderRadius: '8px',
                   backgroundColor: asset.type.free_mint ? '#2E4537' : '#453535',
                   color: asset.type.free_mint ? '#4CAF50' : '#EF5350'
-                }}
-              >
+                }}>
                 {asset.type.free_mint ? 'Free Mint' : 'Paid Mint'}
               </span>
             </Row>
@@ -164,6 +168,5 @@ export function GlittrFTList() {
         />
       </Row>
     </Column>
-  )
-
+  );
 }
