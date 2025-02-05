@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer';
+import { CID } from 'multiformats/cid';
 import pako from 'pako';
 import { useEffect, useState } from 'react';
 
@@ -14,6 +15,16 @@ import { useChainType } from '@/ui/state/settings/hooks';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { useNavigate } from '../../MainRoute';
+
+const isCID = (cid: string) => {
+  try {
+    CID.parse(cid);
+    return true;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (e) {
+    return false;
+  }
+};
 
 type GlittrNFT = {
   id: string;
@@ -61,17 +72,18 @@ export function GlittrNFTList() {
           .map(async ([key, amount]) => {
             const contractInfo = _balance.contract_info[key];
             let restoredImage;
-            try {
-              const restored = pako.inflate(Buffer.from(contractInfo.asset));
-              restoredImage = `data:image/bmp;base64,${Buffer.from(restored).toString('base64')}`;
-              console.log(restoredImage);
-            } catch (e) {
-              console.error(e);
-              // const blob = new Blob([Buffer.from(contractInfo.asset)], { type: "image/bmp" });
-              // restoredImage = URL.createObjectURL(blob);
-              // console.error(blob)
-              restoredImage = `data:image/bmp;base64,${Buffer.from(contractInfo.asset).toString('base64')}`;
-              console.error(restoredImage);
+            if (isCID(Buffer.from(contractInfo.asset).toString())) {
+              restoredImage = 'https://ipfs.io/ipfs/' + Buffer.from(contractInfo.asset).toString();
+            } else {
+              try {
+                const restored = pako.inflate(Buffer.from(contractInfo.asset));
+                restoredImage = `data:image/bmp;base64,${Buffer.from(restored).toString('base64')}`;
+                console.log(restoredImage);
+              } catch (e) {
+                console.error(e);
+                restoredImage = `data:image/bmp;base64,${Buffer.from(contractInfo.asset).toString('base64')}`;
+                console.error(restoredImage);
+              }
             }
 
             return {
