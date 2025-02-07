@@ -824,11 +824,33 @@ export class WalletController extends BaseController {
 
     const utxos = await openapiService.getBTCUtxos(account.address);
 
+    const nonGlittrUtxos: any[] = []
+    try {
+      for (const utxo of utxos) {
+        const assetFetch = await fetch(`${CHAINS_MAP[preferenceService.getChainType()].glittrApi}/assets/${utxo.txid}/${utxo.vout}`)
+        const assetString = JSON.stringify(assetFetch)
+        const asset = JSON.parse(assetString)
+        const assetIsEmpty =
+          !asset.assets ||
+          !asset.assets.list ||
+          Object.keys(asset.assets.list).length === 0;
+
+        if (assetIsEmpty) {
+          nonGlittrUtxos.push(utxo)
+        }
+      }
+    } catch (error) {
+      throw new Error(`Error filter non glittr utxos : ${error}`)
+    }
+    
+    console.log(utxos)
+    console.log(nonGlittrUtxos)
+
     // if (checkAddressFlag(openapiService.addressFlag, AddressFlagType.CONFIRMED_UTXO_MODE)) {
     //   utxos = utxos.filter((v) => (v as any).height !== UNCONFIRMED_HEIGHT);
     // }
 
-    const btcUtxos = utxos.map((v) => {
+    const btcUtxos = nonGlittrUtxos.map((v) => {
       return {
         txid: v.txid,
         vout: v.vout,
