@@ -1,4 +1,3 @@
-import compareVersions from 'compare-versions';
 import { useCallback } from 'react';
 
 import { CHAINS_MAP, ChainType, VERSION } from '@/shared/constant';
@@ -156,33 +155,33 @@ export function useVersionInfo() {
   const accountsState = useSettingsState();
   const walletConfig = accountsState.walletConfig;
   const newVersion = walletConfig.version;
-  const skippedVersion = accountsState.skippedVersion;
+  // const skippedVersion = accountsState.skippedVersion;
   const currentVesion = VERSION;
-  let skipped = false;
-  let latestVersion = '';
+  const skipped = true;
+  const latestVersion = '';
   // skip if new version is empty
-  if (!newVersion) {
-    skipped = true;
-  }
+  // if (!newVersion) {
+  //   skipped = true;
+  // }
 
-  // skip if skipped
-  if (newVersion == skippedVersion) {
-    skipped = true;
-  }
+  // // skip if skipped
+  // if (newVersion == skippedVersion) {
+  //   skipped = true;
+  // }
 
-  // skip if current version is greater or equal to new version
-  if (newVersion) {
-    if (compareVersions(currentVesion, newVersion) >= 0) {
-      skipped = true;
-    } else {
-      latestVersion = newVersion;
-    }
-  }
+  // // skip if current version is greater or equal to new version
+  // if (newVersion) {
+  //   if (compareVersions(currentVesion, newVersion) >= 0) {
+  //     skipped = true;
+  //   } else {
+  //     latestVersion = newVersion;
+  //   }
+  // }
 
-  // skip if current version is 0.0.0
-  if (currentVesion === '0.0.0') {
-    skipped = true;
-  }
+  // // skip if current version is 0.0.0
+  // if (currentVesion === '0.0.0') {
+  //   skipped = true;
+  // }
   return {
     currentVesion,
     newVersion,

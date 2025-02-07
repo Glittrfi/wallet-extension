@@ -1388,10 +1388,10 @@
   resolved "https://registry.yarnpkg.com/@glittr-sdk/borsh/-/borsh-2.4.0.tgz#81c537a98f8510cbc879ca8c6117a2960bb5366b"
   integrity sha512-N6IHwdnBURjUA1smMhzg9IoR7YWfuiWLCEODSJxqHsAcV2/F6pzgaML1KZmNYO6t6FK8GNu8KH/DrcJwVsgOFQ==
 
-"@glittr-sdk/sdk@^0.27.12-beta.0":
-  version "0.27.12-beta.0"
-  resolved "https://registry.yarnpkg.com/@glittr-sdk/sdk/-/sdk-0.27.12-beta.0.tgz#cc00ff28e88238da5c97a7414d27e99244cb13b9"
-  integrity sha512-/g755NVpd0D0HXIYiqEx1UTLGCgYwXhJ9KXY8fpS0SmFQdYSBcuhql/LbHrPPy4lOTBFzy1IXyHWwOzexK1pFQ==
+"@glittr-sdk/sdk@0.27.16-beta.0":
+  version "0.27.16-beta.0"
+  resolved "https://registry.yarnpkg.com/@glittr-sdk/sdk/-/sdk-0.27.16-beta.0.tgz#1e8410c2717152f4d5afecc9323c0955b7ff3129"
+  integrity sha512-JS9JEjYMjls+XKh65wJYhuvYieIFnoxieGEPJ8tVdbwSY8ILwAPxHUCp3VI9PE88lazyIOM3iUOk7nQSPRUpBw==
   dependencies:
     "@bitcoinerlab/secp256k1" "^1.1.1"
     "@glittr-sdk/borsh" "^2.4.0"

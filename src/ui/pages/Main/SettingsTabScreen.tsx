@@ -280,17 +280,6 @@ export default function SettingsTabScreen() {
             />
           </Row>
           <Text text={`Version: ${versionInfo.currentVesion}`} preset="sub" textCenter />
-          {versionInfo.latestVersion && (
-            <Text
-              text={`Latest Version: ${versionInfo.latestVersion}`}
-              preset="link"
-              color="red"
-              textCenter
-              onClick={() => {
-                window.open('https://unisat.io/extension/update');
-              }}
-            />
-          )}
         </Column>
 
         {switchChainModalVisible && (
