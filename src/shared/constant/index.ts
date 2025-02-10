@@ -381,7 +381,7 @@ export const CHAINS_MAP: { [key: string]: TypeChain } = {
     okxExplorerUrl: '',
     showPrice: false,
     defaultExplorer: 'mempool-space',
-    glittrApi: 'https://devnet2-core-api.glittr.fi', // TODO
+    glittrApi: 'https://devnet-core-api.glittr.fi', // TODO
     electrumApi: 'https://devnet-electrum.glittr.fi', // TODO
     glittrApiKey: '1c4938fb-1a10-48c2-82eb-bd34eeb05b20' // TODO
   }
