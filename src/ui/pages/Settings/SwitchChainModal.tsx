@@ -1,58 +1,106 @@
 import { useEffect, useState } from 'react';
 
 import { CHAIN_GROUPS, CHAINS_MAP, ChainType, TypeChainGroup } from '@/shared/constant';
-import { Card, Column, Icon, Image, Row, Text } from '@/ui/components';
+import { Button, Card, Column, Icon, Image, Input, Row, Text } from '@/ui/components';
 import { useTools } from '@/ui/components/ActionComponent';
 import { BottomModal } from '@/ui/components/BottomModal';
 import { useReloadAccounts } from '@/ui/state/accounts/hooks';
-import { useChain, useChangeChainTypeCallback } from '@/ui/state/settings/hooks';
+import { useChain, useChangeChainTypeCallback, useGlittrApiKey, useSetGlittrApiKey } from '@/ui/state/settings/hooks';
 import { colors } from '@/ui/theme/colors';
 import { CloseOutlined } from '@ant-design/icons';
 
 function ChainItem(props: { chainType: ChainType; inGroup?: boolean; onClose: () => void }) {
   const chain = CHAINS_MAP[props.chainType];
-
   const currentChain = useChain();
   const selected = currentChain.enum == chain.enum;
   const changeChainType = useChangeChainTypeCallback();
   const reloadAccounts = useReloadAccounts();
   const tools = useTools();
+  const setGlittrApiKey = useSetGlittrApiKey();
+  const glittrApiKey = useGlittrApiKey()
+
+  const [apiKey, setApiKey] = useState(glittrApiKey);
+  const [showApiKey, setShowApiKey] = useState(false);
+
+  const handleChainChange = async () => {
+    if (chain.disable) {
+      return tools.toastError('This network is not available');
+    }
+
+    // if (currentChain.enum == chain.enum) {
+    //   return;
+    // }
+
+    if (chain.enum === ChainType.GLITTR_DEVNET) {
+      setShowApiKey(true);
+      return;
+    }
+
+    await changeChainType(chain.enum);
+    props.onClose();
+    reloadAccounts();
+    tools.toastSuccess(`Changed to ${chain.label}`);
+  };
+
+  const handleApiKeySubmit = async () => {
+    if (!apiKey.trim()) {
+      return tools.toastError('API Key is required');
+    }
+    setGlittrApiKey(apiKey);
+    await changeChainType(chain.enum);
+    props.onClose();
+    reloadAccounts();
+    tools.toastSuccess(`Changed to ${chain.label}`);
+  };
+
   return (
-    <Card
-      style={Object.assign(
-        {},
-        {
-          borderRadius: 10,
-          borderColor: colors.gold,
-          borderWidth: selected ? 1 : 0
-        },
-        props.inGroup
-          ? { backgroundColor: 'opacity', marginTop: 6 }
-          : {
+    <Column gap="zero">
+      <Card
+        style={Object.assign(
+          {},
+          {
+            borderRadius: 10,
+            borderColor: colors.gold,
+            borderWidth: selected ? 1 : 0
+          },
+          props.inGroup
+            ? { backgroundColor: 'opacity', marginTop: 6 }
+            : {
               backgroundColor: chain.disable ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.1)',
               marginTop: 12
             }
-      )}
-      onClick={async () => {
-        if (chain.disable) {
-          return tools.toastError('This network is not available');
-        }
-
-        if (currentChain.enum == chain.enum) {
-          return;
-        }
-        await changeChainType(chain.enum);
-        props.onClose();
-        reloadAccounts();
-        tools.toastSuccess(`Changed to ${chain.label}`);
-      }}>
-      <Row fullX justifyBetween itemsCenter>
-        <Row itemsCenter>
-          <Image src={chain.icon} size={30} style={{ opacity: chain.disable ? 0.7 : 1 }} />
-          <Text text={chain.label} color={chain.disable ? 'textDim' : 'text'} />
+        )}
+        onClick={handleChainChange}>
+        <Row fullX justifyBetween itemsCenter>
+          <Row itemsCenter>
+            <Image src={chain.icon} size={30} style={{ opacity: chain.disable ? 0.7 : 1 }} />
+            <Column>
+              <Text text={chain.label} color={chain.disable ? 'textDim' : 'text'} />
+              {showApiKey ?
+                <>
+                  <Column mt="md" style={{ minWidth: '250px', width: '250px' }}>
+                    <Input
+                      placeholder="Enter Glittr API Key"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      containerStyle={{ padding: '8px', minHeight: '20px' }}
+                    />
+                    <Row fullX>
+                      <Button text="Save API Key" preset="primary" onClick={handleApiKeySubmit}
+                        full style={{ height: '30px', minHeight: '10px' }}
+                      />
+                    </Row>
+                  </Column>
+                </> : chain.enum === ChainType.GLITTR_DEVNET && apiKey &&
+                <Text text={`API Key : ${apiKey.length > 12 ? `${apiKey.slice(0, 4)}...${apiKey.slice(-4)}` : apiKey}`} color={'text'} style={{ fontSize: '10px' }} />
+              }
+            </Column>
+          </Row>
         </Row>
-      </Row>
-    </Card>
+      </Card>
+
+
+    </Column>
   );
 }
 

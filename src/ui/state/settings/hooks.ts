@@ -259,3 +259,22 @@ export function useCAT20MarketPlaceWebsite(tokenId: string) {
   const chainType = useChainType();
   return `${CHAINS_MAP[chainType].unisatUrl}/dex/cat20/${tokenId}`;
 }
+
+export function useGlittrApiKey() {
+  const settingsState = useSettingsState();
+  return settingsState.glittrApiKey;
+}
+
+export function useSetGlittrApiKey() {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (apiKey: string) => {
+      dispatch(
+        settingsActions.updateSettings({
+          glittrApiKey: apiKey
+        })
+      );
+    },
+    [dispatch]
+  );
+}

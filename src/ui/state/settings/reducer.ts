@@ -11,6 +11,7 @@ export interface SettingsState {
   walletConfig: WalletConfig;
   skippedVersion: string;
   autoLockTimeId: number;
+  glittrApiKey: string;
 }
 
 export const initialState: SettingsState = {
@@ -26,7 +27,8 @@ export const initialState: SettingsState = {
     disableUtxoTools: false
   },
   skippedVersion: '',
-  autoLockTimeId: DEFAULT_LOCKTIME_ID
+  autoLockTimeId: DEFAULT_LOCKTIME_ID,
+  glittrApiKey: ''
 };
 
 const slice = createSlice({
@@ -46,6 +48,7 @@ const slice = createSlice({
           skippedVersion?: string;
           chainType?: ChainType;
           autoLockTimeId?: number;
+          glittrApiKey?: string;
         };
       }
     ) {

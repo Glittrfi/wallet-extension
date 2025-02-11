@@ -3,7 +3,7 @@ import { CID } from 'multiformats/cid';
 import pako from 'pako';
 import { useEffect, useState } from 'react';
 
-import { CHAINS_MAP } from '@/shared/constant';
+import { CHAINS_MAP, ChainType } from '@/shared/constant';
 import { GlittrBalanceData } from '@/shared/types';
 import { Column, Row } from '@/ui/components';
 import { useTools } from '@/ui/components/ActionComponent';
@@ -11,7 +11,7 @@ import { Empty } from '@/ui/components/Empty';
 import { Pagination } from '@/ui/components/Pagination';
 import { useExtensionIsInTab } from '@/ui/features/browser/tabs';
 import { useCurrentAccount } from '@/ui/state/accounts/hooks';
-import { useChainType } from '@/ui/state/settings/hooks';
+import { useChainType, useGlittrApiKey } from '@/ui/state/settings/hooks';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { useNavigate } from '../../MainRoute';
@@ -40,6 +40,7 @@ export function GlittrNFTList() {
   const chainType = useChainType();
   const tools = useTools();
   const isInTab = useExtensionIsInTab();
+  const glittrApiKey = useGlittrApiKey()
 
   const [balance, setBalance] = useState<GlittrBalanceData | null>(null);
   const [nfts, setNFTs] = useState<GlittrNFT[]>([]);
@@ -49,7 +50,8 @@ export function GlittrNFTList() {
   const fetchData = async () => {
     try {
       const balanceData = await fetch(
-        `${CHAINS_MAP[chainType].glittrApi}/helper/address/${currentAccount.address}/balance`
+        `${CHAINS_MAP[chainType].glittrApi}/helper/address/${currentAccount.address}/balance`,
+        { headers: chainType === ChainType.GLITTR_DEVNET ? { Authorization: `Bearer ${glittrApiKey}` } : undefined }
       );
       if (!balanceData.ok) {
         console.log(`Failed to fetch balance: ${balanceData.statusText}`);

@@ -12,7 +12,7 @@ import settings from './settings/reducer';
 import transactions from './transactions/reducer';
 import ui from './ui/reducer';
 
-const PERSISTED_KEYS: string[] = ['ui', 'discovery'];
+const PERSISTED_KEYS: string[] = ['ui', 'discovery', 'settings'];
 const store = configureStore({
   reducer: {
     accounts,
